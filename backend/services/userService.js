@@ -24,7 +24,7 @@ exports.loginUser = async (req) => {
 };
 
 exports.getUserDetails = async (userId) => {
-    const user = await User.findOne({ _id : userId });
+    const user = await User.findOne({ _id : userId }, {password : false});
     if (!user?._id) throw new CustomError(404, "user not found");
     return user;
   };

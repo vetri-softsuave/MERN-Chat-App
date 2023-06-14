@@ -7,7 +7,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
   if (!token) throw new CustomError(401, "please login");
   jwt.verify(token, process.env.JWT_SECRET_KEY, (err, data) => {
     if (err) throw new CustomError(400, err.message || "please login again");
-    req.userId = data.userId;
+    req.body.userId = data.userId;
     next();
   });
 });
