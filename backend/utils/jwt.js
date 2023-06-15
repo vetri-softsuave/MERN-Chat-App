@@ -1,10 +1,16 @@
 const jwt = require("jsonwebtoken");
-const { jwtSecretKey } = require("../config/constants");
+const { accessSecretKey, refreshSecretKey } = require("../config/constants");
 
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, jwtSecretKey, {
-    expiresIn: "1d",
+const generateAccessToken = (userId) => {
+  return jwt.sign({ userId }, accessSecretKey, {
+    expiresIn: "15s",
   });
 };
 
-module.exports = generateToken;
+const generateRefreshToken = (userId) => {
+  return jwt.sign({ userId }, refreshSecretKey, {
+    expiresIn: "40s",
+  });
+};
+
+module.exports = { generateAccessToken, generateRefreshToken };

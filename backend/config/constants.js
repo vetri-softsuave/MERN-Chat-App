@@ -1,3 +1,5 @@
 exports.port = process.env.PORT || 4000;
 exports.mongoDBUrl = process.env.MONGODB_URL;
-exports.jwtSecretKey = process.env.JWT_SECRET_KEY;
+exports.accessSecretKey = process.env.ACCESS_SECRET_KEY;
+exports.refreshSecretKey = process.env.REFRESH_SECRET_KEY;
+
