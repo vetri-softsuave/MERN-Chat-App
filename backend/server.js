@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 dotenv.config();
 const connectToMongo = require("./config/db");
 const { port } = require("./config/constants");
@@ -11,6 +12,7 @@ const authRoutes = require("./routes/authRoutes");
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use(notFound);

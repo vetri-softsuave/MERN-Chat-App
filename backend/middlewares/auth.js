@@ -15,8 +15,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
 });
 
 const verifyRefreshToken = asyncHandler(async (req, res, next) => {
-  const token = req?.cookies;
-  console.log("refresh token", token);
+  const token = req?.cookies?.jwt;
   if (!token) throw new CustomError(401, "invalid token, please login");
   jwt.verify(token, refreshSecretKey, (err, data) => {
     if (err) throw new CustomError(401, "token expired, please login again");

@@ -42,7 +42,7 @@ const refreshToken = asyncHandler(async (req, res) => {
   if (result?._id)
     res.status(200).send({
       message: "refresh token verified",
-      accessToken: generateToken(result?._id),
+      accessToken: generateAccessToken(result?._id),
     });
   else throw new CustomError(401, "token expired, login again");
 });

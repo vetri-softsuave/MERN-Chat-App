@@ -3,13 +3,13 @@ const { accessSecretKey, refreshSecretKey } = require("../config/constants");
 
 const generateAccessToken = (userId) => {
   return jwt.sign({ userId }, accessSecretKey, {
-    expiresIn: "15s",
+    expiresIn: "1h",
   });
 };
 
 const generateRefreshToken = (userId) => {
   return jwt.sign({ userId }, refreshSecretKey, {
-    expiresIn: "40s",
+    expiresIn: "1d",
   });
 };
 
