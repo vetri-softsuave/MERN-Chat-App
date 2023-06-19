@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
+import apiSlice from "../api";
 
 const initialState = {
   name: "",
   email: "",
   picture: "",
-  token: "",
+  token: localStorage.getItem("accessToken"),
+  isLoggedIn: false,
 };
 const userSlice = createSlice({
   name: "user",
@@ -16,10 +18,39 @@ const userSlice = createSlice({
       state.picture = action.payload.picture;
     },
     setAccessToken: (state, action) => {
-      state.token = action.payload;
+      state.token = action.payload.accessToken;
+      state.isLoggedIn = true;
+      localStorage.setItem("accessToken", action.payload.accessToken);
     },
+    logout: (state) => {
+      state.email = "";
+      state.name = "";
+      state.picture = "";
+      state.token = "";
+      state.isLoggedIn = false;
+      localStorage.clear();
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      apiSlice.endpoints.login.matchFulfilled,
+      (state, { payload }) => {
+        state.token = payload.accessToken;
+        state.isLoggedIn = true;
+        localStorage.setItem("accessToken", payload.accessToken);
+      }
+    ),
+      builder.addMatcher(
+        apiSlice.endpoints.getUserDetails.matchFulfilled,
+        (state, { payload }) => {
+          console.log("payload: ", payload);
+          state.email = payload.user.email;
+          state.name = payload.user.name;
+          state.picture = payload.user.picture;
+        }
+      );
   },
 });
 
-export const { setUserDetails, setAccessToken } = userSlice.actions;
+export const { setUserDetails, setAccessToken, logout } = userSlice.actions;
 export default userSlice.reducer;
