@@ -31,13 +31,14 @@ exports.getUserDetails = async (userId) => {
 
 exports.findUsers = async (query, userId) => {
   const { search } = query;
-  const searchQuery = search
-    ? {
-        $or: [
-          { name: { $regex: search, $options: "i" } },
-          { email: { $regex: search, $options: "i" } },
-        ],
-      }
-    : {};
-  return await User.find(searchQuery,{password: false}).find({ _id: { $ne: userId } });
+  const searchQuery = {
+    $or: [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ],
+  };
+
+  return await User.find(searchQuery, { password: false }).find({
+    _id: { $ne: userId },
+  });
 };

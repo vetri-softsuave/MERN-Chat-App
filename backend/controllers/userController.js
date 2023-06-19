@@ -11,6 +11,7 @@ const getUser = asyncHandler(async (req, res) => {
 
 const searchUsers = asyncHandler(async (req, res) => {
   const query = req.query;
+  if (!query.search) res.status(204).send({ users: [] });
   const users = await findUsers(query, req.body.userId);
   if (!users || users?.length < 1) res.status(204).send({ users: [] });
   else res.send({ users });
