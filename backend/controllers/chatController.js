@@ -20,7 +20,7 @@ const accessChat = asyncHandler(async (req, res) => {
   let chat = await findIndividualChat(userId, receiverUserId);
   if (!chat || chat?.length <= 0) {
     await createChat(userId, receiverUserId);
-    chat = await findChat(userId, receiverUserId);
+    chat = await findIndividualChat(userId, receiverUserId);
   }
   res.send({ chat: chat[0] });
 });

@@ -130,7 +130,7 @@ const SideDrawer = () => {
                 />
               </InputGroup>
             </Box>
-            <UserList isLoading={isFetching} users={data?.users ?? []} />
+            <UserList isLoading={isFetching} users={data?.users ?? []} onClose={onClose} />
           </DrawerBody>
         </DrawerContent>
       </Drawer>

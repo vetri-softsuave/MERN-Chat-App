@@ -36,7 +36,7 @@ const baseQueyWithReauth = async (args, api, extraOptions) => {
 };
 const apiSlice = createApi({
   reducerPath: "api",
-  tagTypes: ["user"],
+  tagTypes: ["user", "chat"],
   baseQuery: baseQueyWithReauth,
   endpoints: () => ({}),
 });

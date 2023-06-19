@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import apiSlice from "../api";
 
 const initialState = {
+  userId: "",
   name: "",
   email: "",
   picture: "",
@@ -13,6 +14,7 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUserDetails: (state, action) => {
+      state.userId = action.payload._id;
       state.email = action.payload.email;
       state.name = action.payload.name;
       state.picture = action.payload.picture;
@@ -43,7 +45,7 @@ const userSlice = createSlice({
       builder.addMatcher(
         apiSlice.endpoints.getUserDetails.matchFulfilled,
         (state, { payload }) => {
-          console.log("payload: ", payload);
+          state.userId = payload.user._id;
           state.email = payload.user.email;
           state.name = payload.user.name;
           state.picture = payload.user.picture;
