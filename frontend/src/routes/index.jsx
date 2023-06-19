@@ -1,15 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
-import Chat from "../pages/Chat";
-import Home from "../pages/Home";
+import MainGuard from "../guards/MainGuard";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
-  },
-  {
-    path: "/chats",
-    element: <Chat />,
+    element: <MainGuard />,
   },
 ]);
 

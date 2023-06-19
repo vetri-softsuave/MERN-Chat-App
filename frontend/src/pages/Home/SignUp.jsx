@@ -11,18 +11,14 @@ import {
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
 import { signUpFormSchema } from "../../config/schema";
-import { useRegisterUserMutation } from "../../redux/api/userApi";
-import { setAccessToken } from "../../redux/features/userSlice";
+import { makeToastConfig } from "../../config/utils";
+import { useRegisterUserMutation } from "../../redux/api/authApi";
 import uploadImage from "../../services/cloudinary";
 
 const SignUp = () => {
-  const [registerUser, { isLoading, isSuccess, isError, error, data }] =
+  const [registerUser, { isLoading, isSuccess, isError, error }] =
     useRegisterUserMutation();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const {
     values,
     errors,
@@ -51,48 +47,30 @@ const SignUp = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      dispatch(setAccessToken(data?.accessToken));
-      toast({
-        title: "User Registered Successfully",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-        position: "bottom",
-      });
-      navigate("/chats");
+      toast(makeToastConfig("User Registered Successfully", "success"));
     } else if (isError)
-      toast({
-        title: error?.data?.message || "User Registration Failed",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        position: "bottom",
-      });
+      toast(
+        makeToastConfig(
+          error?.data?.message || "User Registration Failed",
+          "error"
+        )
+      );
   }, [isSuccess, isError, error]);
-  console.log("error: ", error);
   const uploadImageHandler = async (pic) => {
     setUploadingImage(true);
     if (
       pic === undefined ||
       (pic.type !== "image/jpeg" && pic.type !== "image/png")
     ) {
-      toast({
-        title: "Please select an image",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-        position: "bottom",
-      });
+      toast(makeToastConfig("Please select an image", "warning"));
     } else {
       const res = await uploadImage(pic);
-      console.log(res);
       setPicture(res?.data?.url);
     }
     setUploadingImage(false);
   };
   function submitHandler(data) {
     data.picture = picture;
-    console.log("submitted", data);
     registerUser(data);
     resetForm();
   }

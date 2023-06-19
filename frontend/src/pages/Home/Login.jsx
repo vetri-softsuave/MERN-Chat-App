@@ -11,18 +11,13 @@ import {
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
 import { loginFormSchema } from "../../config/schema";
-import { useLoginMutation } from "../../redux/api/userApi";
-import { setAccessToken } from "../../redux/features/userSlice";
+import { makeToastConfig } from "../../config/utils";
+import { useLoginMutation } from "../../redux/api/authApi";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [login, { isLoading, isError, isSuccess, error, data }] =
-    useLoginMutation();
+  const [login, { isLoading, isError, isSuccess, error }] = useLoginMutation();
   const toast = useToast();
   const {
     values,
@@ -41,30 +36,17 @@ const Login = () => {
     validationSchema: loginFormSchema,
   });
   async function submitHandler(data) {
-    console.log(data);
     login(data);
     resetForm();
   }
 
   useEffect(() => {
     if (isSuccess) {
-      dispatch(setAccessToken(data.accessToken));
-      toast({
-        title: "Login successFull",
-        duration: 3000,
-        isClosable: true,
-        status: "success",
-        position: "bottom",
-      });
-      navigate("/chats");
+      toast(makeToastConfig("Login successFull", "success"));
     } else if (isError)
-      toast({
-        title: error?.data?.message || "something went wrong",
-        duration: 3000,
-        isClosable: true,
-        status: "error",
-        position: "bottom",
-      });
+      toast(
+        makeToastConfig(error?.data?.message || "something went wrong", "error")
+      );
   }, [isError, isSuccess, error]);
   return (
     <form onSubmit={handleSubmit}>
