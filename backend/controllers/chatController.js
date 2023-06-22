@@ -33,8 +33,8 @@ const fetchChats = asyncHandler(async (req, res) => {
 
 const createGroupChat = asyncHandler(async (req, res) => {
   const { userId, users, groupName } = req.body;
-  for (let userId in users) {
-    checkValidObjectId(userId);
+  for (let userId of users) {
+    checkValidObjectId({ userId });
   }
   const chat = await createNewGroupChat(userId, users, groupName);
   if (!chat?._id)

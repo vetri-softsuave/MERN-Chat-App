@@ -1,6 +1,7 @@
 import { Box, Button, Stack, Text } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import ChatLoading from "../../components/ChatLoading";
+import GroupModal from "../../components/Modal/GroupModal";
+import ChatLoading from "../../components/miscellaneous/ChatLoading";
 import { getSender } from "../../config/utils";
 import { useFetchChatsQuery } from "../../redux/api/chatApi";
 import { setSelectedChat } from "../../redux/features/chatSlice";
@@ -10,16 +11,16 @@ const MyChats = () => {
   const { data: chats, isLoading: chatsLoading } = useFetchChatsQuery();
   const user = useSelector((state) => state.user);
   const { selectedChat } = useSelector((state) => state.chat);
-  console.log('selectedChat: ', selectedChat);
+  console.log("selectedChat: ", selectedChat);
   console.log("chats", chats);
 
   const handleSelectedChat = (chat) => {
-    console.log("chat", chat)
+    console.log("chat", chat);
     dispatch(setSelectedChat(chat));
   };
   return (
     <Box
-      display={{ base: true ? "none" : "flex", md: "flex" }}
+      display={{ base: selectedChat?._id ? "none" : "flex", md: "flex" }}
       flexDir="column"
       alignItems="center"
       p={3}
@@ -39,13 +40,15 @@ const MyChats = () => {
         justifyContent="space-between"
       >
         My Chats
-        <Button
-          display="flex"
-          fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-          rightIcon={<i className="fa-solid fa-plus"></i>}
-        >
-          New Group Chat
-        </Button>
+        <GroupModal>
+          <Button
+            display="flex"
+            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+            rightIcon={<i className="fa-solid fa-plus"></i>}
+          >
+            New Group Chat
+          </Button>
+        </GroupModal>
       </Box>
       <Box
         display="flex"

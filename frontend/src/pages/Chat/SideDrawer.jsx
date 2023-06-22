@@ -20,26 +20,23 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ProfileModal from "../../components/ProfileModal";
-import UserList from "../../components/UserList";
+import ProfileModal from "../../components/Modal/ProfileModal";
+import UserList from "../../components/User/UserList";
 import { makeToastConfig } from "../../config/utils";
+import useSearchUsers from "../../hooks/useSearchUsers";
 import { useLogoutMutation } from "../../redux/api/authApi";
-import { useSearchUsersQuery } from "../../redux/api/userApi";
 import { logout as logoutAction } from "../../redux/features/userSlice";
 
 const SideDrawer = () => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [logout, { isSuccess, isError, error }] = useLogoutMutation();
-  const [search, setSearch] = useState("");
-  const [searchKey, setSearchKey] = useState("");
-  const { data, isFetching } = useSearchUsersQuery(searchKey);
-  console.log("isFetching: ", isFetching);
+  const { users, usersLoading, onSearchInputChange } = useSearchUsers();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-  console.log("data: ", data);
+  console.log("data: ", users);
   useEffect(() => {
     if (isSuccess) {
       dispatch(logoutAction());
@@ -48,13 +45,6 @@ const SideDrawer = () => {
     if (isError)
       toast(makeToastConfig(error?.data?.message || "Logout failed", "error"));
   }, [isSuccess, isError]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearchKey(search);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [search]);
 
   const logoutHandler = () => {
     logout();
@@ -88,22 +78,17 @@ const SideDrawer = () => {
             <MenuButton p={1} m={1}>
               <i className="fa-solid fa-bell"></i>
             </MenuButton>
-            {/* <MenuList></MenuList> */}
+            {/* <MenuList>notifications</MenuList> */}
           </Menu>
           <Menu>
             <MenuButton
               as={Button}
               rightIcon={<i className="fa-solid fa-chevron-down fa-xs"></i>}
             >
-              <Avatar
-                size="sm"
-                name={user?.name}
-                cursor="pointer"
-                src=""
-              />
+              <Avatar size="sm" name={user?.name} cursor="pointer" src="" />
             </MenuButton>
             <MenuList>
-              <ProfileModal>
+              <ProfileModal user={user}>
                 <MenuItem>Profile</MenuItem>
               </ProfileModal>
               <MenuDivider />
@@ -124,13 +109,16 @@ const SideDrawer = () => {
                 </InputLeftElement>
                 <Input
                   placeholder="search by name or email"
-                  value={search}
                   mr={2}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={onSearchInputChange}
                 />
               </InputGroup>
             </Box>
-            <UserList isLoading={isFetching} users={data?.users ?? []} onClose={onClose} />
+            <UserList
+              isLoading={usersLoading}
+              users={users ?? []}
+              onClose={onClose}
+            />
           </DrawerBody>
         </DrawerContent>
       </Drawer>

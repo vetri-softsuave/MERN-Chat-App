@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import LoadingScreen from "../components/LoadingScreen";
+import LoadingScreen from "../components/miscellaneous/LoadingScreen";
 import Chat from "../pages/Chat";
 import Home from "../pages/Home";
 import { useGetUserDetailsQuery } from "../redux/api/userApi";

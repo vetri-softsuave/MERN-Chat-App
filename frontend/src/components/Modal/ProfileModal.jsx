@@ -1,5 +1,6 @@
 import {
   Button,
+  IconButton,
   Image,
   Modal,
   ModalBody,
@@ -11,17 +12,18 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
 
-const ProfileModal = ({ children }) => {
-  const user = useSelector((state) => state.user);
+const ProfileModal = ({ children, user }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
       {children ? (
         <span onClick={onOpen}>{children}</span>
       ) : (
-        <i className="fa-solid fa-eye" onClick={onOpen}></i>
+        <IconButton
+          icon={<i className="fa-solid fa-eye"></i>}
+          onClick={onOpen}
+        />
       )}
       <Modal size="lg" isCentered isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
