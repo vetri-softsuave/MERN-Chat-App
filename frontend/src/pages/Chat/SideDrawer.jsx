@@ -85,7 +85,12 @@ const SideDrawer = () => {
               as={Button}
               rightIcon={<i className="fa-solid fa-chevron-down fa-xs"></i>}
             >
-              <Avatar size="sm" name={user?.name} cursor="pointer" src="" />
+              <Avatar
+                size="sm"
+                name={user?.name}
+                cursor="pointer"
+                src={user?.picture}
+              />
             </MenuButton>
             <MenuList>
               <ProfileModal user={user}>

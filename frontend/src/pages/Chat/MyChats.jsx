@@ -1,4 +1,5 @@
 import { Box, Button, Stack, Text } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import GroupModal from "../../components/Modal/GroupModal";
 import ChatLoading from "../../components/miscellaneous/ChatLoading";
@@ -8,12 +9,18 @@ import { setSelectedChat } from "../../redux/features/chatSlice";
 
 const MyChats = () => {
   const dispatch = useDispatch();
-  const { data: chats, isLoading: chatsLoading } = useFetchChatsQuery();
+  const {
+    data: chats,
+    isLoading: chatsLoading,
+    refetch: refetchChats,
+  } = useFetchChatsQuery();
   const user = useSelector((state) => state.user);
   const { selectedChat } = useSelector((state) => state.chat);
-  console.log("selectedChat: ", selectedChat);
-  console.log("chats", chats);
 
+  useEffect(() => {
+    refetchChats();
+  }, []);
+  
   const handleSelectedChat = (chat) => {
     console.log("chat", chat);
     dispatch(setSelectedChat(chat));
