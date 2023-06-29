@@ -31,6 +31,15 @@ const leaveGroupSchema = yup.object({
   groupId: yup.string().required("groupId is required"),
 });
 
+const sendMessageSchema = yup.object({
+  content: yup.string().required("content is required"),
+  chatId: yup.string().required("chatId is required"),
+});
+
+const getAllMessagesFromChatSchema = yup.object({
+  chatId: yup.string().required("chatId is required"),
+});
+
 module.exports = {
   accessChatSchema,
   createGroupChatSchema,
@@ -38,4 +47,6 @@ module.exports = {
   addToGroupSchema,
   removeFromGroupSchema,
   leaveGroupSchema,
+  sendMessageSchema,
+  getAllMessagesFromChatSchema
 };

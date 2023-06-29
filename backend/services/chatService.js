@@ -31,7 +31,7 @@ exports.findChats = async (userId) => {
   let chats = await Chat.find({ users: { $elemMatch: { $eq: userId } } })
     .populate("users", "-password")
     .populate("group_admin", "-password")
-    .populate("latest_message", "-password")
+    .populate("latest_message")
     .sort({ updatedAt: -1 });
 
   chats = await User.populate(chats, {
@@ -41,8 +41,11 @@ exports.findChats = async (userId) => {
   return chats;
 };
 
-exports.findChatById = async (chatId) => {
-  const chat = Chat.findOne({ _id: chatId })
+exports.findChatById = async (chatId, userId) => {
+  const chat = Chat.findOne({
+    _id: chatId,
+    users: { $elemMatch: { $eq: userId } },
+  })
     .populate("users", "-password")
     .populate("group_admin", "-password");
   return chat;

@@ -27,7 +27,7 @@ const accessChat = asyncHandler(async (req, res) => {
 });
 
 const fetchChats = asyncHandler(async (req, res) => {
-  const chats = await findChats(req.body?.userId);
+  const chats = await findChats(req?.userId);
   if (!chats || chats?.length <= 0) res.status(204).send([]);
   else res.send(chats);
 });
@@ -46,7 +46,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
 const renameGroup = asyncHandler(async (req, res) => {
   const { groupId, groupName } = req.body;
   checkValidObjectId({ groupId });
-  const groupExists = await findChatById(groupId);
+  const groupExists = await findChatById(groupId, req.userId);
   if (!groupExists._id) throw new CustomError(400, "Group Not Found");
   const chat = await renameGroupChat(groupId, groupName);
   if (!chat?._id)
@@ -58,7 +58,7 @@ const addToGroup = asyncHandler(async (req, res) => {
   const { groupId, userToAdd } = req.body;
   checkValidObjectId({ groupId });
   checkValidObjectId({ userToAdd });
-  const groupExists = await findChatById(groupId);
+  const groupExists = await findChatById(groupId, req.userId);
   if (!groupExists._id) throw new CustomError(400, "Group Not Found");
   const userExists = await getUserDetails(userToAdd);
   if (!userExists._id) throw new CustomError(400, "user not found");
@@ -72,7 +72,7 @@ const removeFromGroup = asyncHandler(async (req, res) => {
   const { groupId, userToRemove } = req.body;
   checkValidObjectId({ groupId });
   checkValidObjectId({ userToRemove });
-  const groupExists = await findChatById(groupId);
+  const groupExists = await findChatById(groupId, req.userId);
   if (!groupExists._id) throw new CustomError(400, "Group Not Found");
   const userExists = await getUserDetails(userToRemove);
   if (!userExists._id) throw new CustomError(400, "user not found");
@@ -85,7 +85,7 @@ const removeFromGroup = asyncHandler(async (req, res) => {
 const leaveGroup = async (req, res) => {
   const { userId, groupId } = req.body;
   checkValidObjectId({ groupId });
-  const groupExists = await findChatById(groupId);
+  const groupExists = await findChatById(groupId, req.userId);
   if (!groupExists?._id) throw new CustomError(400, "Group not found");
   const chat = await removeUserFromGroup(groupId, userId);
   if (!chat._id) throw new CustomError(500, "something went wrong");
