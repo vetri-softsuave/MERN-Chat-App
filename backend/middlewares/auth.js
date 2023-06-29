@@ -10,7 +10,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
   if (!token) throw new CustomError(401, "token not found, please login");
   jwt.verify(token, accessSecretKey, (err, data) => {
     if (err) throw new CustomError(401, "token expired");
-    req.body.userId = data.userId;
+    req.userId = data.userId;
     next();
   });
 });
@@ -20,7 +20,7 @@ const verifyRefreshToken = asyncHandler(async (req, res, next) => {
   if (!token) throw new CustomError(401, "invalid token, please login");
   jwt.verify(token, refreshSecretKey, (err, data) => {
     if (err) throw new CustomError(401, "token expired, please login again");
-    req.body.userId = data.userId;
+    req.userId = data.userId;
     next();
   });
 });

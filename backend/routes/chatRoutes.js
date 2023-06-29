@@ -7,6 +7,7 @@ const {
   renameGroup,
   addToGroup,
   removeFromGroup,
+  leaveGroup,
 } = require("../controllers/chatController");
 const validate = require("../middlewares/validation");
 const {
@@ -15,6 +16,7 @@ const {
   renameGroupSchema,
   addToGroupSchema,
   removeFromGroupSchema,
+  leaveGroupSchema,
 } = require("../config/chatApiRequestSchema");
 const { isGroupAdmin } = require("../middlewares/authorization");
 
@@ -37,5 +39,6 @@ router.put(
   isGroupAdmin,
   removeFromGroup
 );
+router.put("/group/leave", validate(leaveGroupSchema), leaveGroup);
 
 module.exports = router;

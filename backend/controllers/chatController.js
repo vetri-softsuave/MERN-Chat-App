@@ -1,3 +1,4 @@
+const { isValidObjectId } = require("mongoose");
 const {
   createChat,
   findIndividualChat,
@@ -14,7 +15,7 @@ const CustomError = require("../utils/customError");
 const checkValidObjectId = require("../utils/mongoose");
 
 const accessChat = asyncHandler(async (req, res) => {
-  const userId = req.body.userId;
+  const userId = req.userId;
   const receiverUserId = req.body.receiverUserId;
   checkValidObjectId({ receiverUserId });
   let chat = await findIndividualChat(userId, receiverUserId);
@@ -44,7 +45,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
 
 const renameGroup = asyncHandler(async (req, res) => {
   const { groupId, groupName } = req.body;
-  checkValidObjectId(groupId);
+  checkValidObjectId({ groupId });
   const groupExists = await findChatById(groupId);
   if (!groupExists._id) throw new CustomError(400, "Group Not Found");
   const chat = await renameGroupChat(groupId, groupName);
@@ -81,6 +82,16 @@ const removeFromGroup = asyncHandler(async (req, res) => {
   else res.send(chat);
 });
 
+const leaveGroup = async (req, res) => {
+  const { userId, groupId } = req.body;
+  checkValidObjectId({ groupId });
+  const groupExists = await findChatById(groupId);
+  if (!groupExists?._id) throw new CustomError(400, "Group not found");
+  const chat = await removeUserFromGroup(groupId, userId);
+  if (!chat._id) throw new CustomError(500, "something went wrong");
+  res.send({ message: "successfully removed from group" });
+};
+
 module.exports = {
   accessChat,
   fetchChats,
@@ -88,4 +99,5 @@ module.exports = {
   renameGroup,
   addToGroup,
   removeFromGroup,
+  leaveGroup,
 };

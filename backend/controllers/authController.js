@@ -38,7 +38,7 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const refreshToken = asyncHandler(async (req, res) => {
-  const result = await getUserDetails(req.body.userId);
+  const result = await getUserDetails(req.userId);
   if (result?._id)
     res.status(200).send({
       message: "refresh token verified",

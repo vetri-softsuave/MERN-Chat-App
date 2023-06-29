@@ -27,10 +27,15 @@ const removeFromGroupSchema = yup.object({
   userToRemove: yup.string().required("userToRemove is required"),
 });
 
+const leaveGroupSchema = yup.object({
+  groupId: yup.string().required("groupId is required"),
+});
+
 module.exports = {
   accessChatSchema,
   createGroupChatSchema,
   renameGroupSchema,
   addToGroupSchema,
   removeFromGroupSchema,
+  leaveGroupSchema,
 };
