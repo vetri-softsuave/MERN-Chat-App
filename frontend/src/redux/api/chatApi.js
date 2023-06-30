@@ -54,6 +54,10 @@ const chatApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["chat"],
     }),
+    getMessages: builder.query({
+      query: (chatId) => `/api/message/${chatId}`,
+      transformResponse : (data) => data.messages
+    }),
   }),
 });
 
@@ -65,4 +69,5 @@ export const {
   useAddUserToGroupMutation,
   useRemoveUserFromGroupMutation,
   useLeaveGroupMutation,
+  useGetMessagesQuery,
 } = chatApiSlice;
