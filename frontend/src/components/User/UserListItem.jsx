@@ -1,7 +1,6 @@
 import { Avatar, Box, Text } from "@chakra-ui/react";
 
 const UserListItem = ({ user, onClose, handleFunction }) => {
-  console.log("user: ", user);
 
   return (
     <Box

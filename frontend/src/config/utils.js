@@ -12,10 +12,6 @@ export const getSender = (loggedUser, users) => {
   return users[0]._id === loggedUser.userId ? users[1] : users[0];
 };
 
-// export const isSameSender = (messages, i, userId) => {
-//   return ()
-//   console.log(messages, i, userId);
-// };
 
 export const isLastMessage = (messages, i) => {
   return messages[i].sender._id !== messages[i + 1]?.sender._id;

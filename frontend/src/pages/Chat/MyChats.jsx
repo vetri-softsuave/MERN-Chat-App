@@ -22,7 +22,6 @@ const MyChats = () => {
   }, []);
   
   const handleSelectedChat = (chat) => {
-    console.log("chat", chat);
     dispatch(setSelectedChat(chat));
   };
   return (

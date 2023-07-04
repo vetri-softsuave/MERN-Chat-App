@@ -56,7 +56,14 @@ const chatApiSlice = apiSlice.injectEndpoints({
     }),
     getMessages: builder.query({
       query: (chatId) => `/api/message/${chatId}`,
-      transformResponse : (data) => data.messages
+      transformResponse: (data) => data.messages,
+    }),
+    sendMessage: builder.mutation({
+      query: (payload) => ({
+        url: "api/message",
+        method: "post",
+        body: payload,
+      }),
     }),
   }),
 });
@@ -70,4 +77,5 @@ export const {
   useRemoveUserFromGroupMutation,
   useLeaveGroupMutation,
   useGetMessagesQuery,
+  useSendMessageMutation,
 } = chatApiSlice;

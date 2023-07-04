@@ -7,7 +7,6 @@ import { useGetUserDetailsQuery } from "../redux/api/userApi";
 const MainGuard = () => {
   const { isLoading } = useGetUserDetailsQuery();
   const { isLoggedIn, name } = useSelector((state) => state.user);
-  console.log("isLoggedIn: ", isLoggedIn);
   let content = <Home />;
   if (isLoggedIn) content = <Chat />;
   else if (isLoading) content = <LoadingScreen />;

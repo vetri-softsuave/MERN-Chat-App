@@ -1,8 +1,6 @@
 import { Box } from "@chakra-ui/react";
-import React from "react";
 
 const UserBadgeItem = ({ user, onRemove }) => {
-  console.log('user: ', user);
   return (
     <Box
       px={2}

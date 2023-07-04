@@ -56,7 +56,6 @@ const GroupModal = ({ children }) => {
       groupName: chatName,
       users: selectedUsers.map((i) => i._id),
     };
-    console.log(paylaod);
     createGroup(paylaod);
   };
   return (

@@ -36,7 +36,6 @@ const SideDrawer = () => {
   const { users, usersLoading, onSearchInputChange } = useSearchUsers();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-  console.log("data: ", users);
   useEffect(() => {
     if (isSuccess) {
       dispatch(logoutAction());

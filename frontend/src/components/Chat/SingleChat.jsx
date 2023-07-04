@@ -5,30 +5,130 @@ import {
   Input,
   Spinner,
   Text,
+  useToast,
 } from "@chakra-ui/react";
+import { useContext, useEffect, useState } from "react";
+import Lottie from "react-lottie";
 import { useDispatch, useSelector } from "react-redux";
-import { getSender } from "../../config/utils";
-import { useGetMessagesQuery } from "../../redux/api/chatApi";
-import { setSelectedChat } from "../../redux/features/chatSlice";
+import typingAnimation from "../../assets/animations/typing.json";
+import { getSender, makeToastConfig } from "../../config/utils";
+import { SocketContext } from "../../context/socketContext";
+import {
+  useGetMessagesQuery,
+  useSendMessageMutation,
+} from "../../redux/api/chatApi";
+import { addNewMessage, setSelectedChat } from "../../redux/features/chatSlice";
 import ProfileModal from "../Modal/ProfileModal";
 import UpdateGroupChatModal from "../Modal/UpdateGroupChatModal";
 import ScrollableChat from "./ScrollableChat";
 
+const lottieOptions = {
+  loop: true,
+  autoPlay: true,
+  animationData: typingAnimation,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
 const SingleChat = () => {
   const dispatch = useDispatch();
+  const { socket } = useContext(SocketContext);
   const { selectedChat } = useSelector((state) => state.chat);
-  const user = useSelector((state) => state.user);
-  const { data: messages, isLoading: isMessagesLoading } = useGetMessagesQuery(
+  const toast = useToast();
+  const {
+    user,
+    chat: { messages },
+  } = useSelector((state) => state);
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [messageContent, setMessageContent] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+
+  const lastMessage = messages[messages.length - 1];
+  const { isLoading: isMessagesLoading } = useGetMessagesQuery(
     selectedChat._id
   );
-  console.log(messages);
+  const [
+    sendMessage,
+    {
+      data: newMessage,
+      isSuccess: isSendMessageSuccess,
+      isError: isSendMessageHasError,
+      sendMessageError,
+    },
+  ] = useSendMessageMutation();
+
+  useEffect(() => {
+    socket.emit("setup", user);
+    socket.on("connected", () => {
+      console.log("socket connected");
+      setSocketConnected(true);
+    });
+    socket.on("typing", () => {
+      console.log("typing....");
+      setIsTyping(true);
+    });
+    socket.on("stop_typing", () => setIsTyping(false));
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      socket.emit("stop_typing", selectedChat._id);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [messageContent]);
+
+  useEffect(() => {
+    if (!selectedChat._id) return;
+    socket.emit("join_chat", selectedChat._id);
+  }, [selectedChat?._id]);
+
+  useEffect(() => {
+    socket.on("receive_message", (newMessageReceived) => {
+      console.log("new message received", newMessageReceived);
+      if (newMessageReceived?.chat?._id !== selectedChat?._id) {
+        //do notification
+      } else {
+        if (lastMessage?._id !== newMessageReceived?._id)
+          dispatch(addNewMessage(newMessageReceived));
+      }
+    });
+  }, [selectedChat?._id]);
+
+  useEffect(() => {
+    if (isSendMessageSuccess) {
+      console.log(newMessage);
+      if (lastMessage._id !== newMessage?._id) {
+        socket.emit("new_message", newMessage?.message);
+        dispatch(addNewMessage(newMessage?.message));
+      }
+    }
+    if (isSendMessageHasError)
+      toast(
+        makeToastConfig(
+          sendMessageError?.data?.message || "couldn't send message",
+          "error"
+        )
+      );
+  }, [isSendMessageHasError, isSendMessageSuccess]);
+
   const handleBack = () => {
     dispatch(setSelectedChat({}));
   };
 
-  const sendMessage = (e) => {
+  const handleTyping = (e) => {
+    if (!socketConnected) return;
+    socket.emit("typing", selectedChat._id);
+    setMessageContent(e.target.value);
+    // setTimeout(() => {
+    //   socket.emit("stop_typing", selectedChat._id);
+    // }, 3000);
+  };
+
+  const sendMessageHandler = (e) => {
     if (e.key !== "Enter") return;
-    console.log("input", e.target.value);
+    socket.emit("stop_typing", selectedChat._id);
+    sendMessage({ chatId: selectedChat._id, content: e.target.value });
+    e.target.value = "";
   };
   return (
     <>
@@ -76,14 +176,29 @@ const SingleChat = () => {
               <Spinner size="xl" h={20} w={20} alignSelf="center" m="auto" />
             ) : (
               <div
-                style={{ display: "flex", gap: 10, flexDirection: "column" }}
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  flexDirection: "column",
+                  overflow: "auto",
+                }}
               >
                 <ScrollableChat messages={messages} />
-                <FormControl onKeyDown={sendMessage}>
+                <FormControl onKeyDown={sendMessageHandler}>
+                  {isTyping ? (
+                    <div>
+                      <Lottie
+                        options={lottieOptions}
+                        width={70}
+                        style={{ marginBottom: 15, marginLeft: 0 }}
+                      />
+                    </div>
+                  ) : null}
                   <Input
                     variant="filled"
                     bg="#e0e0e0"
                     placeholder="Enter a message..."
+                    onChange={handleTyping}
                   />
                 </FormControl>
               </div>

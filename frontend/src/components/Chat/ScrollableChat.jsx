@@ -7,7 +7,7 @@ const ScrollableChat = ({ messages }) => {
   const user = useSelector((state) => state.user);
 
   return (
-    <ScrollableFeed>
+    <ScrollableFeed forceScroll={true}>
       {messages &&
         messages?.length > 0 &&
         messages?.map((message, index) => {
