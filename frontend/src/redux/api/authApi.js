@@ -18,6 +18,9 @@ const authApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["user"],
     }),
+    getCookie: builder.query({
+      query: () => `/setcookie`,
+    }),
     logout: builder.mutation({
       query: () => ({
         url: `api/auth/logout`,
@@ -27,6 +30,6 @@ const authApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useRegisterUserMutation, useLoginMutation, useLogoutMutation } =
+export const { useRegisterUserMutation, useLoginMutation, useLogoutMutation, useGetCookieQuery } =
   authApiSlice;
 export default authApiSlice;

@@ -56,7 +56,7 @@ const chatApiSlice = apiSlice.injectEndpoints({
     }),
     getMessages: builder.query({
       query: (chatId) => `/api/message/${chatId}`,
-      transformResponse: (data) => data.messages,
+      transformResponse: (data) => data?.messages,
     }),
     sendMessage: builder.mutation({
       query: (payload) => ({

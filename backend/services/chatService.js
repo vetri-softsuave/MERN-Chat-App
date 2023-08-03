@@ -15,7 +15,7 @@ exports.findIndividualChat = async (userId, otherUserId) => {
   return await Chat.populate(chat, {
     path: "latest_message.sender",
     select: "name email picture",
-  });
+  }); 
 };
 
 exports.createChat = async (userId, otherUserId) => {

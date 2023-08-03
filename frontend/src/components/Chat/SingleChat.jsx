@@ -3,14 +3,14 @@ import {
   FormControl,
   IconButton,
   Input,
+  InputGroup,
+  InputRightElement,
   Spinner,
   Text,
   useToast,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
-import Lottie from "react-lottie";
 import { useDispatch, useSelector } from "react-redux";
-import typingAnimation from "../../assets/animations/typing.json";
 import { getSender, makeToastConfig } from "../../config/utils";
 import { SocketContext } from "../../context/socketContext";
 import {
@@ -22,14 +22,6 @@ import ProfileModal from "../Modal/ProfileModal";
 import UpdateGroupChatModal from "../Modal/UpdateGroupChatModal";
 import ScrollableChat from "./ScrollableChat";
 
-const lottieOptions = {
-  loop: true,
-  autoPlay: true,
-  animationData: typingAnimation,
-  rendererSettings: {
-    preserveAspectRatio: "xMidYMid slice",
-  },
-};
 const SingleChat = () => {
   const dispatch = useDispatch();
   const { socket } = useContext(SocketContext);
@@ -44,9 +36,8 @@ const SingleChat = () => {
   const [isTyping, setIsTyping] = useState(false);
 
   const lastMessage = messages[messages.length - 1];
-  const { isLoading: isMessagesLoading } = useGetMessagesQuery(
-    selectedChat._id
-  );
+  const { isLoading: isMessagesLoading, refetch: refetchMessages } =
+    useGetMessagesQuery(selectedChat._id);
   const [
     sendMessage,
     {
@@ -63,11 +54,17 @@ const SingleChat = () => {
       console.log("socket connected");
       setSocketConnected(true);
     });
-    socket.on("typing", () => {
+    socket.on("typing", (senderId) => {
       console.log("typing....");
-      setIsTyping(true);
+      setIsTyping(senderId !== user?.userId);
     });
     socket.on("stop_typing", () => setIsTyping(false));
+
+    return () => {
+      socket.removeAllListeners("connected");
+      socket.removeAllListeners("typing");
+      socket.removeAllListeners("stop_typing");
+    };
   }, []);
 
   useEffect(() => {
@@ -79,28 +76,36 @@ const SingleChat = () => {
 
   useEffect(() => {
     if (!selectedChat._id) return;
+    refetchMessages();
     socket.emit("join_chat", selectedChat._id);
   }, [selectedChat?._id]);
 
   useEffect(() => {
     socket.on("receive_message", (newMessageReceived) => {
-      console.log("new message received", newMessageReceived);
+      console.log(
+        "new message received",
+        lastMessage,
+        newMessageReceived,
+        selectedChat
+      );
       if (newMessageReceived?.chat?._id !== selectedChat?._id) {
         //do notification
       } else {
-        if (lastMessage?._id !== newMessageReceived?._id)
-          dispatch(addNewMessage(newMessageReceived));
+        dispatch(addNewMessage(newMessageReceived));
       }
     });
-  }, [selectedChat?._id]);
+
+    return () => {
+      socket.removeAllListeners("receive_message");
+    };
+  }, [lastMessage, selectedChat?.id]);
 
   useEffect(() => {
     if (isSendMessageSuccess) {
       console.log(newMessage);
-      if (lastMessage._id !== newMessage?._id) {
-        socket.emit("new_message", newMessage?.message);
-        dispatch(addNewMessage(newMessage?.message));
-      }
+      console.log("newMessage", messages);
+      socket.emit("new_message", newMessage?.message);
+      dispatch(addNewMessage(newMessage?.message));
     }
     if (isSendMessageHasError)
       toast(
@@ -117,7 +122,7 @@ const SingleChat = () => {
 
   const handleTyping = (e) => {
     if (!socketConnected) return;
-    socket.emit("typing", selectedChat._id);
+    socket.emit("typing", { chatId: selectedChat._id, senderId: user.userId });
     setMessageContent(e.target.value);
     // setTimeout(() => {
     //   socket.emit("stop_typing", selectedChat._id);
@@ -183,23 +188,28 @@ const SingleChat = () => {
                   overflow: "auto",
                 }}
               >
-                <ScrollableChat messages={messages} />
+                <ScrollableChat messages={messages} isTyping={isTyping} />
                 <FormControl onKeyDown={sendMessageHandler}>
-                  {isTyping ? (
-                    <div>
-                      <Lottie
-                        options={lottieOptions}
-                        width={70}
-                        style={{ marginBottom: 15, marginLeft: 0 }}
+                  <InputGroup>
+                    <Input
+                      variant="filled"
+                      bg="#e0e0e0"
+                      placeholder="Enter a message..."
+                      onChange={handleTyping}
+                    />
+                    <InputRightElement>
+                      <IconButton
+                        variant="ghost"
+                        _hover="none"
+                        icon={
+                          <i
+                            className="fa-solid fa-paper-plane"
+                            style={{ color: "#38b2ac" }}
+                          ></i>
+                        }
                       />
-                    </div>
-                  ) : null}
-                  <Input
-                    variant="filled"
-                    bg="#e0e0e0"
-                    placeholder="Enter a message..."
-                    onChange={handleTyping}
-                  />
+                    </InputRightElement>
+                  </InputGroup>
                 </FormControl>
               </div>
             )}

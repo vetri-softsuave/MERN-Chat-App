@@ -4,7 +4,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 dotenv.config();
 const connectToMongo = require("./config/db");
-const { port } = require("./config/constants");
+const { port, clientBaseUrl } = require("./config/constants");
 const { errorHandler, notFound } = require("./middlewares/errorHandler");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
@@ -16,7 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://192.168.5.90:3000",
+    origin: clientBaseUrl,
     credentials: true,
   })
 );
@@ -34,7 +34,7 @@ const server = app.listen(port, () => {
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://192.168.5.90:3000",
+    origin: clientBaseUrl,
   },
 });
 io.on("connection", (socket) => {

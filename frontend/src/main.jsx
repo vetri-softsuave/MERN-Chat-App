@@ -7,7 +7,7 @@ import SocketProvider from "./context/socketContext.jsx";
 import store from "./redux/store";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <Provider store={store}>
       <SocketProvider>
         <ChakraProvider>
@@ -15,5 +15,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </ChakraProvider>
       </SocketProvider>
     </Provider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

@@ -2,8 +2,19 @@ import { Avatar, Tooltip } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import ScrollableFeed from "react-scrollable-feed";
 import { calculateMarginLeft, isLastMessage } from "../../config/utils";
+import Lottie from 'react-lottie';
+import typingAnimation from "../../assets/animations/typing.json";
 
-const ScrollableChat = ({ messages }) => {
+const lottieOptions = {
+  loop: true,
+  autoPlay: true,
+  animationData: typingAnimation,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
+
+const ScrollableChat = ({ messages, isTyping }) => {
   const user = useSelector((state) => state.user);
 
   return (
@@ -51,6 +62,15 @@ const ScrollableChat = ({ messages }) => {
             </div>
           );
         })}
+        {isTyping ? (
+                    <div>
+                      <Lottie
+                        options={lottieOptions}
+                        width={70}
+                        style={{ margin:"15px 0px 15px 0px" }}
+                      />
+                    </div>
+                  ) : null}
     </ScrollableFeed>
   );
 };

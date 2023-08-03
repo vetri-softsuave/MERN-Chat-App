@@ -3,7 +3,7 @@ export const makeToastConfig = (title, status) => {
     title,
     status,
     duration: 3000,
-    position: "bottom",
+    position: "top-right",
     isClosable: true,
   };
 };

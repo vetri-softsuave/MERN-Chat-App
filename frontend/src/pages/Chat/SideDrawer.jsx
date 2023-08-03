@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Badge,
   Box,
   Button,
   Drawer,
@@ -20,17 +21,19 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProfileModal from "../../components/Modal/ProfileModal";
 import UserList from "../../components/User/UserList";
 import { makeToastConfig } from "../../config/utils";
+import { SocketContext } from "../../context/socketContext";
 import useSearchUsers from "../../hooks/useSearchUsers";
 import { useLogoutMutation } from "../../redux/api/authApi";
 import { logout as logoutAction } from "../../redux/features/userSlice";
 
 const SideDrawer = () => {
   const user = useSelector((state) => state.user);
+  const { socket } = useContext(SocketContext);
   const dispatch = useDispatch();
   const [logout, { isSuccess, isError, error }] = useLogoutMutation();
   const { users, usersLoading, onSearchInputChange } = useSearchUsers();
@@ -38,6 +41,7 @@ const SideDrawer = () => {
   const toast = useToast();
   useEffect(() => {
     if (isSuccess) {
+      socket.disconnect();
       dispatch(logoutAction());
       toast(makeToastConfig("Logged out", "success"));
     }
@@ -76,6 +80,17 @@ const SideDrawer = () => {
           <Menu>
             <MenuButton p={1} m={1}>
               <i className="fa-solid fa-bell"></i>
+              <Badge
+                bg="red"
+                color="#fff"
+                borderRadius="100%"
+                w="15px"
+                p={0}
+                fontSize="12px"
+                aspectRatio="1:1"
+              >
+                10
+              </Badge>
             </MenuButton>
             {/* <MenuList>notifications</MenuList> */}
           </Menu>

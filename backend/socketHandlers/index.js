@@ -12,7 +12,7 @@ const handleChat = (io, socket) => {
     console.log("user joined chat:", room);
   });
 
-  socket.on("typing", (room) => socket.in(room).emit("typing"));
+socket.on("typing", (room) => socket.in(room.chatId).emit("typing", room.senderId));
   socket.on("stop_typing", (room) => socket.in(room).emit("stop_typing"));
 
   socket.on("new_message", (newMessageReceived) => {
@@ -26,9 +26,9 @@ const handleChat = (io, socket) => {
     }
   });
 
-  socket.off("setup", () => {
-    console.log("user disconnected");
-    socket.leave(user.userId);
+  socket.on("disconnect", () => {
+    console.log(`user ${user?.userId} disconnected`);
+    if (user?.userId) socket.leave(user.userId);
   });
 };
 

@@ -10,14 +10,12 @@ const { generateAccessToken, generateRefreshToken } = require("../utils/jwt");
 const regitserUser = asyncHandler(async (req, res) => {
   const result = await createUser(req);
   if (result?._id) {
-    res.cookie("jwt", generateRefreshToken(result?._id), {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+    const refreshToken = await generateRefreshToken(result?._id);
+    const accessToken = await generateAccessToken(result?._id);
+    res.cookie("jwt", refreshToken);
     res.status(200).send({
       message: "User registered successfully",
-      accessToken: generateAccessToken(result?._id),
+      accessToken: accessToken,
     });
   } else throw new CustomError(400, "Registration failed");
 });
@@ -25,32 +23,33 @@ const regitserUser = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
   const result = await loginUser(req);
   if (result?._id) {
-    res.cookie("jwt", generateRefreshToken(result?._id), {
+    const refreshToken = await generateRefreshToken(result?._id);
+    const accessToken = await generateAccessToken(result?._id);
+    res.cookie("jwt", refreshToken, {
       httpOnly: true,
-      sameSite: "none",
-      secure: true,
     });
     res.status(200).send({
       message: "login successfull",
-      accessToken: generateAccessToken(result?._id),
+      accessToken: accessToken,
     });
   } else throw new CustomError(400, "Login failed");
 });
 
 const refreshToken = asyncHandler(async (req, res) => {
   const result = await getUserDetails(req.userId);
-  if (result?._id)
+  if (result?._id) {
+    const accessToken = await generateAccessToken(result?._id);
     res.status(200).send({
       message: "refresh token verified",
-      accessToken: generateAccessToken(result?._id),
+      accessToken,
     });
-  else throw new CustomError(401, "token expired, login again");
+  } else throw new CustomError(401, "token expired, login again");
 });
 
 const logout = asyncHandler(async (req, res) => {
   const cookies = req.cookies;
   if (!cookies?.jwt) res.status(204);
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
+  res.clearCookie("jwt", { httpOnly: true });
   res.status(200).send({
     message: "cookies cleared",
   });

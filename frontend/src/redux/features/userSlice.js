@@ -7,7 +7,7 @@ const initialState = {
   email: "",
   picture: "",
   token: localStorage.getItem("accessToken"),
-  isLoggedIn: false,
+  isLoggedIn: !!localStorage.getItem("accessToken"),
 };
 const userSlice = createSlice({
   name: "user",
@@ -50,16 +50,16 @@ const userSlice = createSlice({
           state.name = payload.user.name;
           state.picture = payload.user.picture;
         }
-      ),
-      builder.addMatcher(apiSlice.endpoints.logout.matchFulfilled, (state) => {
-        state.userId = "";
-        state.email = "";
-        state.name = "";
-        state.picture = "";
-        state.token = "";
-        state.isLoggedIn = false;
-        localStorage.clear();
-      });
+      )
+      // builder.addMatcher(apiSlice.endpoints.logout.matchFulfilled, (state) => {
+      //   state.userId = "";
+      //   state.email = "";
+      //   state.name = "";
+      //   state.picture = "";
+      //   state.token = "";
+      //   state.isLoggedIn = false;
+      //   localStorage.clear();
+      // });
   },
 });
 

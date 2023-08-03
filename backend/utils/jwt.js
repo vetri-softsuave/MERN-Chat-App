@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
 const { accessSecretKey, refreshSecretKey } = require("../config/constants");
 
-const generateAccessToken = (userId) => {
+const generateAccessToken = async (userId) => {
   return jwt.sign({ userId }, accessSecretKey, {
-    expiresIn: "1h",
+    expiresIn: "15s",
   });
 };
 
-const generateRefreshToken = (userId) => {
+const generateRefreshToken = async (userId) => {
   return jwt.sign({ userId }, refreshSecretKey, {
     expiresIn: "1d",
   });
