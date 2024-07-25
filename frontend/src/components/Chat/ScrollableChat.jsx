@@ -1,9 +1,10 @@
-import { Avatar, Tooltip } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
+import Lottie from "react-lottie";
 import { useSelector } from "react-redux";
 import ScrollableFeed from "react-scrollable-feed";
-import { calculateMarginLeft, isLastMessage } from "../../config/utils";
-import Lottie from 'react-lottie';
 import typingAnimation from "../../assets/animations/typing.json";
+import { calculateMarginLeft, isLastMessage } from "../../config/utils";
+import Message from "./Message";
 
 const lottieOptions = {
   loop: true,
@@ -19,58 +20,40 @@ const ScrollableChat = ({ messages, isTyping }) => {
 
   return (
     <ScrollableFeed forceScroll={true}>
-      {messages &&
-        messages?.length > 0 &&
+      {messages && messages?.length > 0 ? (
         messages?.map((message, index) => {
-          let avatar = null;
           const isCurrentUser = message.sender._id === user.userId;
-          if (
-            message.sender._id !== user.userId &&
-            isLastMessage(messages, index)
-          )
-            avatar = (
-              <Tooltip
-                label={message?.sender.name}
-                hasArrow
-                placement="bottom-start"
-              >
-                <Avatar
-                  src={message?.sender?.picture}
-                  name={message?.sender.name}
-                  mr={1}
-                  mt="7px"
-                  size="sm"
-                  cursor="pointer"
-                />
-              </Tooltip>
-            );
           return (
-            <div key={message._id} style={{ display: "flex" }}>
-              {avatar}
-              <span
-                style={{
-                  backgroundColor: isCurrentUser ? "#BEE3F8" : "#B9F5D0",
-                  borderRadius: "20px",
-                  maxWidth: "75%",
-                  padding: "5px 15px",
-                  marginLeft: calculateMarginLeft(messages, index, user.userId),
-                  marginTop: "10px",
-                }}
-              >
-                {message.content}
-              </span>
-            </div>
+            <Message
+              key={message?._id}
+              isCurrentUser={isCurrentUser}
+              message={message}
+              isLastMessage={isLastMessage(messages, index)}
+              marginLeft={calculateMarginLeft(messages, index, user.userId)}
+            />
           );
-        })}
-        {isTyping ? (
-                    <div>
-                      <Lottie
-                        options={lottieOptions}
-                        width={70}
-                        style={{ margin:"15px 0px 15px 0px" }}
-                      />
-                    </div>
-                  ) : null}
+        })
+      ) : (
+        <Box
+          position="absolute"
+          top={{ base: "50%" }}
+          left={{ base: "50%", md: "50%" }}
+          transform="translate(-50%,-50%)"
+          fontFamily="work sans"
+          fontSize={{ base: "1.2rem", md: "2rem" }}
+        >
+          <Text> No messages yet</Text>
+        </Box>
+      )}
+      {isTyping ? (
+        <div>
+          <Lottie
+            options={lottieOptions}
+            width={70}
+            style={{ margin: "15px 0px 15px 0px" }}
+          />
+        </div>
+      ) : null}
     </ScrollableFeed>
   );
 };

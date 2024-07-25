@@ -41,12 +41,12 @@ const SignUp = () => {
   const toast = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [picture, setPicture] = useState(
-    "https://res.cloudinary.com/vetri/image/upload/v1686809488/boy_glpzsa.jpg"
+    "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
   );
   const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess) { 
       toast(makeToastConfig("User Registered Successfully", "success"));
     } else if (isError)
       toast(
@@ -128,7 +128,7 @@ const SignUp = () => {
                 onClick={() => setShowPassword((pre) => !pre)}
               >
                 {showPassword ? "Hide" : "Show"}
-              </Button>
+              </Button> 
             </InputRightElement>
           </InputGroup>
           <FormErrorMessage>{errors.password}</FormErrorMessage>

@@ -7,7 +7,7 @@ const userApiSlice = apiSlice.injectEndpoints({
       providesTags: ["user"],
     }),
     searchUsers: builder.query({
-      query: (search) => `/api/user/all?search=${search}`
+      query: (search) => `/api/user/all?search=${search}`,
     }),
   }),
 });
